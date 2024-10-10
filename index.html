@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>App Cost Calculator</title>
+  <style>
+    /* Reset */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    /* Body Styling */
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #f0f4f8;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: linear-gradient(135deg, #74ebd5 0%, #acb6e5 100%);
+    }
+
+    /* Container Styling */
+    .container {
+      background-color: #ffffff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 15px 25px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 450px;
+      transition: transform 0.3s ease;
+    }
+
+    .container:hover {
+      transform: scale(1.02);
+    }
+
+    /* Heading */
+    h1 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 20px;
+      font-size: 24px;
+      font-weight: 600;
+    }
+
+    /* Form Group */
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+      color: #555;
+    }
+
+    select, input[type="checkbox"], button {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 15px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      box-sizing: border-box;
+      font-size: 14px;
+    }
+
+    select {
+      background-color: #f9f9f9;
+      transition: border 0.3s ease;
+    }
+
+    select:focus {
+      border-color: #74ebd5;
+      outline: none;
+    }
+
+    input[type="checkbox"] {
+      width: auto;
+      transform: scale(1.1);
+      margin-right: 10px;
+    }
+
+    label[for] {
+      display: inline-block;
+      color: #333;
+      cursor: pointer;
+    }
+
+    /* Button Styling */
+    button {
+      background-color: #74ebd5;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+      padding: 12px;
+      transition: background-color 0.3s ease, transform 0.3s ease;
+      font-weight: bold;
+    }
+
+    button:hover {
+      background-color: #57c9a7;
+      transform: translateY(-2px);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    /* Cost Output Styling */
+    h2 {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 22px;
+      color: #333;
+    }
+
+    span#total-cost {
+      color: #57c9a7;
+      font-weight: bold;
+      font-size: 26px;
+    }
+
+    /* Feature section */
+    #features-section {
+      background-color: #f9f9f9;
+      padding: 15px;
+      border-radius: 8px;
+      border: 1px solid #eee;
+    }
+
+    /* Mobile Responsiveness */
+    @media screen and (max-width: 500px) {
+      .container {
+        padding: 20px;
+        width: 90%;
+      }
+
+      h1 {
+        font-size: 22px;
+      }
+
+      h2 {
+        font-size: 20px;
+      }
+    }
+
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>App Cost Calculator</h1>
+
+  <div class="form-group">
+    <label for="category">App Category</label>
+    <select id="category">
+      <option value="">Select a category</option>
+      <option value="E-commerce">E-commerce</option>
+      <option value="Social Media">Social Media</option>
+      <option value="Cloud Kitchen">Cloud Kitchen</option>
+    </select>
+  </div>
+
+  <div id="features-section" class="form-group">
+    <h3>Select Features:</h3>
+    <!-- Features will be dynamically loaded here -->
+  </div>
+
+  <button onclick="calculateCost()">Calculate Cost</button>
+
+  <h2>Total Cost: $<span id="total-cost">0</span></h2>
+</div>
+
+<script>
+  const featuresData = {
+    'E-commerce': { 'Product Listing': 30, 'Payment Integration': 25 },
+    'Social Media': { 'User Profiles': 30, 'Chat System': 40 },
+    'Cloud Kitchen': { 'Menu Display': 25, 'Online Ordering': 40 },
+  };
+
+  const hourlyRate = 10; // $10 per hour
+  let selectedCategory = '';
+  let selectedFeatures = [];
+
+  // Handle category change and display features
+  document.getElementById('category').addEventListener('change', function() {
+    selectedCategory = this.value;
+    displayFeatures(selectedCategory);
+  });
+
+  // Display the features for the selected category
+  function displayFeatures(category) {
+    const featuresSection = document.getElementById('features-section');
+    featuresSection.innerHTML = '<h3>Select Features:</h3>';
+    selectedFeatures = [];
+
+    if (category) {
+      const features = featuresData[category];
+      for (const feature in features) {
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.value = feature;
+        checkbox.id = feature;
+        checkbox.addEventListener('change', handleFeatureChange);
+
+        const label = document.createElement('label');
+        label.htmlFor = feature;
+        label.innerText = `${feature} (${features[feature]} hours)`;
+
+        featuresSection.appendChild(checkbox);
+        featuresSection.appendChild(label);
+        featuresSection.appendChild(document.createElement('br'));
+      }
+    }
+  }
+
+  // Handle feature selection
+  function handleFeatureChange(event) {
+    const feature = event.target.value;
+    if (event.target.checked) {
+      selectedFeatures.push(feature);
+    } else {
+      selectedFeatures = selectedFeatures.filter(f => f !== feature);
+    }
+  }
+
+  // Calculate the total cost
+  function calculateCost() {
+    if (!selectedCategory || selectedFeatures.length === 0) {
+      alert('Please select a category and at least one feature.');
+      return;
+    }
+
+    let totalHours = 0;
+    selectedFeatures.forEach(feature => {
+      totalHours += featuresData[selectedCategory][feature];
+    });
+
+    const totalCost = totalHours * hourlyRate;
+    document.getElementById('total-cost').innerText = totalCost;
+  }
+</script>
+
+</body>
+</html>
