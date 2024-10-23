@@ -91,27 +91,6 @@
       cursor: pointer;
     }
 
-    /* Button Styling */
-    button {
-      background-color: #74ebd5;
-      color: white;
-      border: none;
-      cursor: pointer;
-      font-size: 16px;
-      padding: 12px;
-      transition: background-color 0.3s ease, transform 0.3s ease;
-      font-weight: bold;
-    }
-
-    button:hover {
-      background-color: #57c9a7;
-      transform: translateY(-2px);
-    }
-
-    button:active {
-      transform: translateY(0);
-    }
-
     /* Cost Output Styling */
     h2 {
       text-align: center;
@@ -172,8 +151,6 @@
     <!-- Features will be dynamically loaded here -->
   </div>
 
-  <button onclick="calculateCost()">Calculate Cost</button>
-
   <h2>Total Cost: $<span id="total-cost">0</span></h2>
 </div>
 
@@ -192,6 +169,7 @@
   document.getElementById('category').addEventListener('change', function() {
     selectedCategory = this.value;
     displayFeatures(selectedCategory);
+    calculateCost(); // Automatically calculate cost after category selection
   });
 
   // Display the features for the selected category
@@ -228,12 +206,13 @@
     } else {
       selectedFeatures = selectedFeatures.filter(f => f !== feature);
     }
+    calculateCost(); // Automatically calculate cost when a feature is selected/deselected
   }
 
   // Calculate the total cost
   function calculateCost() {
-    if (!selectedCategory || selectedFeatures.length === 0) {
-      alert('Please select a category and at least one feature.');
+    if (!selectedCategory) {
+      document.getElementById('total-cost').innerText = 0;
       return;
     }
 
